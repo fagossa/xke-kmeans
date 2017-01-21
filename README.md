@@ -1,6 +1,7 @@
-Consuming a camera stream
+K-means example using scala
 =========================
 
+Based on 'machine learning in action'
 
 # How run the code?
 
