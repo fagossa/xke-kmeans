@@ -12,10 +12,10 @@ object KMeans {
   // Given a distance, centroid factory and
   // centroid aggregation function, identify
   // the k centroids of a dataset
-  def run[A](dist: Distance[A])
-            (factory: CentroidsFactory[A])
-            (aggregator: ToCentroid[A])
-            (dataSet: Seq[Sample[A]])(k: Int) = {
+  def apply[A](dist: Distance[A])
+              (factory: CentroidsFactory[A])
+              (aggregator: ToCentroid[A])
+              (dataSet: Seq[Sample[A]])(k: Int): (Seq[Sample[A]], Classifier[A]) = {
     // Recursively update Centroids and
     // the assignment of observations to Centroids
     def update(centroids: Seq[Sample[A]])(assignment: Option[Seq[(Int, Double)]]): (Seq[Sample[A]], Seq[(Int, Double)]) = {
@@ -50,7 +50,10 @@ object KMeans {
         (centroids, next)
       }
     }
-
+    val initialCentroids = factory(dataSet)(k)
+    val centroids = update(initialCentroids)(None)._1
+    val classifier = (dataPoint: Sample[A]) => centroids.minBy(centroid => dist(centroid)(dataPoint))
+    (centroids, classifier)
   }
 
   // Returns the
