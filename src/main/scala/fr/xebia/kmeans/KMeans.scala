@@ -12,7 +12,7 @@ object KMeans {
   // Given a distance, centroid factory and
   // centroid aggregation function, identify
   // the k centroids of a dataset
-  def apply[A](dist: Distance[A])
+  def run[A](dist: Distance[A])
               (factory: CentroidsFactory[A])
               (aggregator: ToCentroid[A])
               (dataSet: Seq[Sample[A]])(k: Int): (Seq[Sample[A]], Classifier[A]) = {

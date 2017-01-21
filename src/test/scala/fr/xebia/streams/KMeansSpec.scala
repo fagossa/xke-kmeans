@@ -15,8 +15,7 @@ class KMeansSpec extends FlatSpec with MustMatchers {
     distance mustBe Math.sqrt(65)
   }
 
-  "" should "" in {
-
+  "Kmeans" should "cluster data" in {
     val centroids = List(
       List(0.0, 0.0, 0.0),
       List(20.0, 30.0, 40.0),
@@ -27,11 +26,14 @@ class KMeansSpec extends FlatSpec with MustMatchers {
       (1 to 50).map(x => x + 5 * Random.nextDouble() - 0.5)
     }
 
-    val factory: CentroidsFactory[Double] = ??? //KMeans.randomCentroids()
+    val factory: CentroidsFactory[Double] = dataSet => k => KMeans.randomCentroids(dataSet)(k)
 
-    val identifiedCentroids, classifier = KMeans[Double](GeometricDistances.euclidean)(factory)(KMeans.avgCentroid)(data)
+    // TODO: fix compilation problem
+    val identifiedCentroids, classifier =
+      KMeans.run[Double](GeometricDistances.euclidean)(factory)(KMeans.avgCentroid)(data)
 
     println(s"Centroids identified $identifiedCentroids")
+    identifiedCentroids mustBe List()
   }
 
 }
