@@ -6,5 +6,4 @@ object RunExample extends App {
 
   val logger = LoggerFactory.getLogger(getClass)
 
-
 }
