@@ -6,7 +6,7 @@ object Distances {
 
   object Geometric {
 
-    val euclidean: Distance[Double] = x => y => {
+    val euclidean: Distance[Seq[Double]] = x => y => {
       val sum = x.zip(y)
         .map { case (pi, qi) => Math.pow(qi - pi, 2) }
         .sum

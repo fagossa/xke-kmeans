@@ -1,19 +1,17 @@
 package fr.xebia.streams
 
-import fr.xebia.kmeans.Centroids.{avgCentroid, randomCentroids}
+import fr.xebia.kmeans.Centroids.{ avgCentroid, randomCentroids }
 import fr.xebia.kmeans.distance.Distances.Geometric.euclidean
-import fr.xebia.kmeans.{Centroids, CentroidsFactory, KMeans, Sample}
+import fr.xebia.kmeans.{ Centroids, CentroidsFactory, KMeans }
 import org.scalatest._
-
-import scala.util.Random
 
 class KMeansSpec extends FunSpec with MustMatchers {
 
   describe("Distance") {
 
     it("should calculate euclidean among dimensions") {
-      val x: Sample[Double] = List(-1, 2, 3)
-      val y: Sample[Double] = List(4, 0, -3)
+      val x: Seq[Double] = List(-1, 2, 3)
+      val y: Seq[Double] = List(4, 0, -3)
       val distance: Double = euclidean(x)(y)
       distance mustBe Math.sqrt(65)
     }
@@ -23,7 +21,7 @@ class KMeansSpec extends FunSpec with MustMatchers {
   describe("Kmeans") {
 
     it("should detect the closest centroid") {
-      def assertCentroidEquals(index: Int, centroids: List[List[Double]], samples: List[List[Double]]): Any = {
+      def assertCentroidEquals(index: Int, centroids: List[Seq[Double]], samples: List[Seq[Double]]): Any = {
         samples
           .map(obs => Centroids.closestCentroid(euclidean)(centroids)(obs))
           .map { case (centroidIndex, distance) => centroidIndex }
@@ -57,10 +55,10 @@ class KMeansSpec extends FunSpec with MustMatchers {
 
       // When
       //val factory: CentroidsFactory[Double] = dataSet => k => randomCentroids(dataSet)(k)
-      val factory: CentroidsFactory[Double] = dataSet => k => dataSet(0) :: dataSet(3) :: Nil
+      val factory: CentroidsFactory[Seq[Double]] = dataSet => k => dataSet(0) :: dataSet(3) :: Nil
 
       val (identifiedCentroids, classifier) =
-        KMeans.run[Double](euclidean)(factory)(avgCentroid)(data)(k)
+        KMeans.run[Seq[Double]](euclidean)(factory)(avgCentroid)(data)(k)
 
       // Then
       info(s"Centroids identified $identifiedCentroids")

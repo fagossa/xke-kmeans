@@ -14,14 +14,10 @@ object KMeans {
   // Given a distance, centroid factory and
   // centroid aggregation function, identify
   // the k centroids of a dataset
-  def run[A](dist: Distance[A])
-            (factory: CentroidsFactory[A])
-            (aggregator: ToCentroid[A])
-            (dataSet: Seq[Sample[A]])
-            (k: Int): (Seq[Sample[A]], Classifier[A]) = {
+  def run[A](dist: Distance[A])(factory: CentroidsFactory[A])(aggregator: ToCentroid[A])(dataSet: Seq[A])(k: Int): (Seq[A], Classifier[A]) = {
     // Recursively update Centroids and
     // the assignment of observations to Centroids
-    def update(centroids: Seq[Sample[A]])(assignment: Option[Seq[(Int, Double)]]): (Seq[Sample[A]], Seq[(Int, Double)]) = {
+    def update(centroids: Seq[A])(assignment: Option[Seq[(Int, Double)]]): (Seq[A], Seq[(Int, Double)]) = {
       val samplesAndClosestCentroid = dataSet
         .map(obs => closestCentroid(dist)(centroids)(obs))
       val changed = anyAssignmentChanged(assignment, samplesAndClosestCentroid)
@@ -34,11 +30,11 @@ object KMeans {
     }
     val initialCentroids = factory(dataSet)(k)
     val centroids = update(initialCentroids)(None)._1
-    val classifier = (dataPoint: Sample[A]) => centroids.minBy(centroid => dist(centroid)(dataPoint))
+    val classifier = (dataPoint: A) => centroids.minBy(centroid => dist(centroid)(dataPoint))
     (centroids, classifier)
   }
 
-  private [kmeans] def anyAssignmentChanged[A](assignment: Option[Seq[(Int, Double)]], nextAssignment: Seq[(Int, Double)]): Boolean = {
+  private[kmeans] def anyAssignmentChanged[A](assignment: Option[Seq[(Int, Double)]], nextAssignment: Seq[(Int, Double)]): Boolean = {
     assignment match {
       case Some(previousAssignment) =>
         previousAssignment
@@ -52,10 +48,7 @@ object KMeans {
   // Update each Centroid position:
   // extract cluster of points assigned to each Centroid
   // and compute the new Centroid by aggregating cluster
-  private [kmeans] def recalculateCentroids[A](dataSet: Seq[Sample[A]])
-                             (centroids: Seq[Sample[A]])
-                             (centroidAssignedAndDistance: Seq[(Int, Double)])
-                             (aggregator: ToCentroid[A]): Seq[Sample[A]] = {
+  private[kmeans] def recalculateCentroids[A](dataSet: Seq[A])(centroids: Seq[A])(centroidAssignedAndDistance: Seq[(Int, Double)])(aggregator: ToCentroid[A]): Seq[A] = {
     val assignedDataSet = dataSet.zip(centroidAssignedAndDistance)
     centroids
       .zipWithIndex
@@ -76,9 +69,7 @@ object Centroids {
   // - index of centroid
   // - distance to the centroid
   // which is closest to observation
-  def closestCentroid[A](dist: Distance[A])
-                        (centroids: Seq[Sample[A]])
-                        (obs: Sample[A]): (Int, Double) = {
+  def closestCentroid[A](dist: Distance[A])(centroids: Seq[A])(obs: A): (Int, Double) = {
     centroids
       .zipWithIndex
       .map { case (value, i) => (i, dist(value)(obs)) }
@@ -91,8 +82,8 @@ object Centroids {
       .take(k)
 
   // Recompute Centroid as average of given sample
-  def avgCentroid(currentCentroid: Sample[Double])(samples: Seq[Sample[Double]]): Sample[Double] = {
-    def sumPoints(v1: Sample[Double], v2: Sample[Double]): Sample[Double] =
+  def avgCentroid(currentCentroid: Seq[Double])(samples: Seq[Seq[Double]]): Seq[Double] = {
+    def sumPoints(v1: Seq[Double], v2: Seq[Double]): Seq[Double] =
       v1.zip(v2).map { case (v1x, v2x) => v1x + v2x }
 
     val size = samples.length
