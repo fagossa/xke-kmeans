@@ -1,19 +1,18 @@
-K-means example using scala
+K-means hands-on
 =========================
 
 Based on 'machine learning in action'
 
 > In a nutshell, clustering focuses on the following question: given a set of observations,
-> can the computer figure out a way to classify them into “meaningful groups”? The major 
-> difference with Classification methods is that in clustering, the Categories / Groups are 
-> initially unknown: it’s the algorithm’s job to figure out sensible ways to group items into 
+> can the computer figure out a way to classify them into “meaningful groups”? The major
+> difference with Classification methods is that in clustering, the Categories / Groups are
+> initially unknown: it’s the algorithm’s job to figure out sensible ways to group items into
 > Clusters, all by itself (hence the word “unsupervised”).
 
-# How run the code?
+# What exercise are available?
 
-Just type the following commands
+* Scala
 
-```
-$ sbt
-$ run
-```
+# What solutions are available?
+
+* Scala
