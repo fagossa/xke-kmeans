@@ -11,8 +11,8 @@ Based on 'machine learning in action'
 
 # What exercise are available?
 
-* Scala
+* [scala](https://github.com/fagossa/xke-kmeans/tree/scala/README.md)
 
 # What solutions are available?
 
-* Scala
+* [scala](https://github.com/fagossa/xke-kmeans/tree/scala-solution/README.md)
