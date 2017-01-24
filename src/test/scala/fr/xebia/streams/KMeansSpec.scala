@@ -1,6 +1,7 @@
 package fr.xebia.streams
 
 import fr.xebia.kmeans.Centroids.{ avgCentroid, randomCentroids }
+import fr.xebia.kmeans.distance.DistanceLike
 import fr.xebia.kmeans.distance.Distances.Geometric.euclidean
 import fr.xebia.kmeans.{ Centroids, CentroidsFactory, KMeans }
 import org.scalatest._
@@ -40,7 +41,7 @@ class KMeansSpec extends FunSpec with MustMatchers {
         List(List(5.0, 7.0), List(3.5, 5.0), List(4.5, 5.0), List(3.5, 4.5)))
     }
 
-    it("should cluster data") {
+    it("should cluster data 'List[Double]'") {
       // Given
       val data = List(
         List(1.0, 1.0),
@@ -68,6 +69,18 @@ class KMeansSpec extends FunSpec with MustMatchers {
         List(3.9, 5.1)
       )
       identifiedCentroids mustBe expectedCentroids
+    }
+
+    it("should cluster data 'String'") {
+      import DistanceLike._
+      def distance[T](x: T)(y: T)(implicit dist: DistanceLike[T]) = {
+        dist.distance(x)(y)
+      }
+
+      val toRoot = "word"
+      val wordList = List("mundo", "world", "monde")
+        .sortWith((a, b) => distance(toRoot)(a) < distance(toRoot)(b))
+      wordList mustBe List("world", "monde", "mundo")
     }
   }
 
