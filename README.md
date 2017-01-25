@@ -15,4 +15,4 @@ Based on 'machine learning in action'
 
 # What solutions are available?
 
-* [scala](https://github.com/fagossa/xke-kmeans/tree/scala-solution/README.md)
+* [scala](https://github.com/fagossa/xke-kmeans/tree/scala-solution)
