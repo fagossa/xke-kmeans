@@ -11,15 +11,21 @@ import fr.xebia.kmeans.Centroids.closestCentroid
  */
 object KMeans {
 
-  // Given a distance, centroid factory and
-  // centroid aggregation function, identify
-  // the k centroids of a dataset
-  def run[A](dist: Distance[A])(factory: CentroidsFactory[A])(aggregator: ToCentroid[A])(dataSet: Seq[A])(k: Int): (Seq[A], Classifier[A]) = {
-    // Recursively update Centroids and
-    // the assignment of observations to Centroids
-    def update(centroids: Seq[A])(assignment: Option[Seq[(Int, Double)]]): (Seq[A], Seq[(Int, Double)]) = {
+  /**
+   * Identify the k centroids of a dataset
+   *
+   * @param dist       distance function
+   * @param factory    provider of the initial centroids
+   * @param aggregator function to choose the centroid based on the current centroid and the new data
+   * @param dataSet    the data to be clustered
+   * @param k          amount of clusters
+   * @return a tuple of the final centroids and a classifier
+   */
+  def run[A](factory: CentroidsFactory[A])(aggregator: ToCentroid[A])(dataSet: List[A])(k: Int)(implicit dist: Distance[A]): (List[A], Classifier[A]) = {
+    //  update Centroids and the assignment of observations to Centroids
+    def update(centroids: List[A])(assignment: Option[List[(Int, Double)]]): (List[A], List[(Int, Double)]) = {
       val samplesAndClosestCentroid = dataSet
-        .map(obs => closestCentroid(dist)(centroids)(obs))
+        .map(obs => closestCentroid(centroids)(obs))
       val changed = anyAssignmentChanged(assignment, samplesAndClosestCentroid)
       if (changed) {
         val updatedCentroids = recalculateCentroids(dataSet)(centroids)(samplesAndClosestCentroid)(aggregator)
@@ -34,7 +40,7 @@ object KMeans {
     (centroids, classifier)
   }
 
-  private[kmeans] def anyAssignmentChanged[A](assignment: Option[Seq[(Int, Double)]], nextAssignment: Seq[(Int, Double)]): Boolean = {
+  private[kmeans] def anyAssignmentChanged[A](assignment: Option[List[(Int, Double)]], nextAssignment: List[(Int, Double)]): Boolean = {
     assignment match {
       case Some(previousAssignment) =>
         previousAssignment
@@ -45,10 +51,12 @@ object KMeans {
     }
   }
 
-  // Update each Centroid position:
-  // extract cluster of points assigned to each Centroid
-  // and compute the new Centroid by aggregating cluster
-  private[kmeans] def recalculateCentroids[A](dataSet: Seq[A])(centroids: Seq[A])(centroidAssignedAndDistance: Seq[(Int, Double)])(aggregator: ToCentroid[A]): Seq[A] = {
+  /*
+  * Update each Centroid position:
+  * - extract cluster of points assigned to each Centroid
+  * - and compute the new Centroid by aggregating cluster
+  */
+  private[kmeans] def recalculateCentroids[A](dataSet: List[A])(centroids: List[A])(centroidAssignedAndDistance: List[(Int, Double)])(aggregator: ToCentroid[A]): List[A] = {
     val assignedDataSet = dataSet.zip(centroidAssignedAndDistance)
     centroids
       .zipWithIndex
@@ -65,11 +73,13 @@ object KMeans {
 
 object Centroids {
 
-  // Returns the
-  // - index of centroid
-  // - distance to the centroid
-  // which is closest to observation
-  def closestCentroid[A](dist: Distance[A])(centroids: Seq[A])(obs: A): (Int, Double) = {
+  /**
+   * Returns the
+   * - index of centroid
+   * - distance to the centroid
+   * which is closest to observation
+   */
+  def closestCentroid[A](centroids: List[A])(obs: A)(implicit dist: Distance[A]): (Int, Double) = {
     centroids
       .zipWithIndex
       .map { case (value, i) => (i, dist(value)(obs)) }
@@ -81,9 +91,11 @@ object Centroids {
       .shuffle(sample)
       .take(k)
 
-  // Recompute Centroid as average of given sample
-  def avgCentroid(currentCentroid: Seq[Double])(samples: Seq[Seq[Double]]): Seq[Double] = {
-    def sumPoints(v1: Seq[Double], v2: Seq[Double]): Seq[Double] =
+  /**
+   * Recompute Centroid as average of given sample. if no samples, keep current centroid
+   */
+  def avgCentroid(currentCentroid: List[Double])(samples: List[List[Double]]): List[Double] = {
+    def sumPoints(v1: List[Double], v2: List[Double]): List[Double] =
       v1.zip(v2).map { case (v1x, v2x) => v1x + v2x }
 
     val size = samples.length

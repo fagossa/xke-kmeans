@@ -6,8 +6,8 @@ package object kmeans {
 
   type Distance[A] = A => A => Double
 
-  type CentroidsFactory[A] = Seq[A] => Int => Seq[A]
+  type CentroidsFactory[A] = List[A] => Int => List[A]
 
-  type ToCentroid[A] = A => Seq[A] => A
+  type ToCentroid[A] = A => List[A] => A
 
 }
